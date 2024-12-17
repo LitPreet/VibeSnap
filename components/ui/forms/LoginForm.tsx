@@ -44,9 +44,10 @@ export default function GoogleSignin() {
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="default"
       onClick={signInWithGoogle}
       disabled={isGoogleLoading}
+      className="text-white font-bold p-6 tracking-wider bg-black mt-6 w-60 rounded-3xl"
     >
       {isGoogleLoading ? (
         <Loader2 className="mr-2 size-4 animate-spin" />
@@ -59,7 +60,7 @@ export default function GoogleSignin() {
           className="mr-2"
         />
       )}{" "}
-      Sign in with Google
+      Continue with Google
     </Button>
   );
 }

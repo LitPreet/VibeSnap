@@ -1,6 +1,6 @@
 
 import { redirect } from "next/navigation";
-import LoginForm from "./LoginForm";
+// import LoginForm from "../../components/ui/forms/LoginForm";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function LoginPage() {
@@ -9,6 +9,6 @@ export default async function LoginPage() {
   if (data.user) {
     redirect("/dashboard");
   }
-
-  return <LoginForm />;
+return <h1>hey</h1>
+  // return <LoginForm />;
 }
