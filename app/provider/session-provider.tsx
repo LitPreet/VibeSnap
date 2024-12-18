@@ -14,8 +14,8 @@ export default function SessionProvider() {
 
   const readUserSession = async () => {
     const { data } = await supabase.auth.getSession();
-    // const {data: userInfo} = await supabase.from("users").select("*").eq("id",data?.session?.user?.id).single();
-    // setUser(userInfo);
+    const {data: userInfo} = await supabase.from("users").select("*").eq("id",data?.session?.user?.id).single();
+    setUser(userInfo);
   };
 
   useEffect(() => {
