@@ -30,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex justify-center w-[100vw] `}
       >
-        <div className="max-w-md w-full">
+        <div className="max-w-[490px] w-full">
         {children}
         </div>
         <Toaster />
