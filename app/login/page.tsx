@@ -8,10 +8,7 @@ import GoogleSignin from "@/components/ui/forms/LoginForm";
 
 export default async function LoginPage() {
   const supabase = await createClient();
-  // const { data, error } = await supabase.auth.getUser();
-  // if (data.user) {
-  //   redirect("/dashboard");
-  // }
+ 
   return (
     <div className="h-screen w-full grid overflow-hidden">
       <MansoryLayout />

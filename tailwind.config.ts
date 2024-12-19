@@ -9,6 +9,11 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			karla: ['Karla', 'sans-serif'],
+			nunito: ['Nunito', 'sans-serif'],
+			poppins: ['Poppins', 'sans-serif'],
+		  },
 		screens: {
 			xs: '375px', 
 			'xs-390': '390px', 

@@ -39,7 +39,7 @@ export function createFilePreview(file: File | null): string {
 
 export function generateSupabaseFilePath(
   userId: string, 
-  fileType: 'profile' | 'cover'
+  fileType: 'profile' | 'cover' | 'post'
 ): string {
   const timestamp = Date.now();
   return `${userId}/${fileType}_${timestamp}.jpg`;
