@@ -44,3 +44,20 @@ export function generateSupabaseFilePath(
   const timestamp = Date.now();
   return `${userId}/${fileType}_${timestamp}.jpg`;
 }
+
+ // Function to generate a snapshot image from the video
+ export const snapImage = (video: HTMLVideoElement, url: string) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const image = canvas.toDataURL();
+  
+    // Ensure the image is large enough (greater than 100 KB)
+    const success = image.length > 100000;
+  
+    if (success) {
+      return image;
+    }
+    return null;
+  };

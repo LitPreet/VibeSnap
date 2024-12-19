@@ -2,13 +2,24 @@
 import { uploadToSupabase } from "@/lib/supabase-storage-utils";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useRef, useEffect, useCallback, useTransition } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useTransition,
+} from "react";
 import camera from "@/assets/images/camera.png";
 import Image from "next/image";
 import folder from "@/assets/images/folder.png";
 import video from "@/assets/images/video (2).png";
 import gallery from "@/assets/images/photo.png";
-import { compressImage, createFilePreview, generateSupabaseFilePath } from "@/lib/image-utils";
+import {
+  compressImage,
+  createFilePreview,
+  generateSupabaseFilePath,
+  snapImage,
+} from "@/lib/image-utils";
 import { toast } from "@/hooks/use-toast";
 import Webcam from "react-webcam";
 import {
@@ -20,35 +31,44 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import Delete from "@/assets/images/delete.png"
+import Delete from "@/assets/images/delete.png";
 import { useUser } from "@/lib/store/user";
 import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
 const page = () => {
-    const {user} = useUser();
-  const [text, setText] = useState<string>(""); 
-  const [imageFiles, setImageFiles] = useState<File[]>([]); 
-  const [videoFile, setVideoFile] = useState<File | null>(null); 
+  const { user } = useUser();
+  const [text, setText] = useState<string>("");
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false); 
+  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const MAX_MEDIA_LIMIT = 3;
   const MAX_VIDEO_SIZE_MB = 10;
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  const supabase = createClient();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const webcamRef = useRef<Webcam | null>(null);
-
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0)
+  ;
+  const handleImageFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles) return;
 
-    const totalMedia = imageFiles.length + (videoFile ? 1 : 0) + selectedFiles.length;
+    const totalMedia =
+      imageFiles.length + (videoFile ? 1 : 0) + selectedFiles.length;
     if (totalMedia > MAX_MEDIA_LIMIT) {
-      toast({ variant: "destructive",description:`Media limit exceeded! You can only upload ${MAX_MEDIA_LIMIT} items.`});
+      toast({
+        variant: "destructive",
+        description: `Media limit exceeded! You can only upload ${MAX_MEDIA_LIMIT} items.`,
+      });
       return;
     }
 
@@ -79,13 +99,19 @@ const page = () => {
     const file = selectedFiles[0];
 
     if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
-      toast({variant:'destructive', description:`Video size exceeds ${MAX_VIDEO_SIZE_MB} MB.`});
+      toast({
+        variant: "destructive",
+        description: `Video size exceeds ${MAX_VIDEO_SIZE_MB} MB.`,
+      });
       return;
     }
 
     const totalMedia = imageFiles.length + (videoFile ? 1 : 0) + 1; // +1 for the new video
     if (totalMedia > MAX_MEDIA_LIMIT) {
-       toast({variant:'destructive', description:`Media limit exceeded! You can only upload ${MAX_MEDIA_LIMIT} items.`});
+      toast({
+        variant: "destructive",
+        description: `Media limit exceeded! You can only upload ${MAX_MEDIA_LIMIT} items.`,
+      });
       return;
     }
 
@@ -95,44 +121,26 @@ const page = () => {
 
     // Snapshot function to generate an image from the video
     const generateThumbnail = () => {
-        const thumbnail = snapImage(video, url);
-        if (thumbnail) {
-          setPreviews((prevPreviews) => [...prevPreviews, thumbnail]); // Set thumbnail preview
-        }
-      };
-    
-      // Wait for the video metadata to load before generating the thumbnail
-      video.addEventListener("loadeddata", () => {
-        generateThumbnail();
-      });
-    
-      // Set up video element
-      video.preload = "metadata";
-      video.src = url;
-      video.muted = true;
-      video.playsInline = true;
-      video.play();
-    
-      // Set video file for upload
-      setVideoFile(file);
+      const thumbnail = snapImage(video, url);
+      if (thumbnail) {
+        setPreviews((prevPreviews) => [...prevPreviews, thumbnail]); // Set thumbnail preview
+      }
     };
 
+    // Wait for the video metadata to load before generating the thumbnail
+    video.addEventListener("loadeddata", () => {
+      generateThumbnail();
+    });
 
- // Function to generate a snapshot image from the video
- const snapImage = (video: HTMLVideoElement, url: string) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const image = canvas.toDataURL();
-  
-    // Ensure the image is large enough (greater than 100 KB)
-    const success = image.length > 100000;
-  
-    if (success) {
-      return image;
-    }
-    return null;
+    // Set up video element
+    video.preload = "metadata";
+    video.src = url;
+    video.muted = true;
+    video.playsInline = true;
+    video.play();
+
+    // Set video file for upload
+    setVideoFile(file);
   };
 
   const handleDelete = (index: number) => {
@@ -143,31 +151,33 @@ const page = () => {
     if (deletedPreview === createFilePreview(videoFile)) {
       setVideoFile(null);
     } else {
-      setImageFiles((prevImageFiles) => prevImageFiles.filter((_, i) => i !== index));
+      setImageFiles((prevImageFiles) =>
+        prevImageFiles.filter((_, i) => i !== index)
+      );
     }
   };
-  
+
   // Handle capturing the photo from webcam
   const capturePhoto = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
         // Convert base64 to blob
-        const byteString = atob(imageSrc.split(',')[1]);
-        const mimeString = imageSrc.split(',')[0].split(':')[1].split(';')[0];
+        const byteString = atob(imageSrc.split(",")[1]);
+        const mimeString = imageSrc.split(",")[0].split(":")[1].split(";")[0];
         const ab = new ArrayBuffer(byteString.length);
         const ia = new Uint8Array(ab);
-        
+
         for (let i = 0; i < byteString.length; i++) {
           ia[i] = byteString.charCodeAt(i);
         }
-        
+
         const blob = new Blob([ab], { type: mimeString });
-        
+
         // Create a File object from the blob
         const fileName = `capture_${Date.now()}.jpg`;
-        const imageFile = new File([blob], fileName, { type: 'image/jpeg' });
-        
+        const imageFile = new File([blob], fileName, { type: "image/jpeg" });
+
         // Update state
         setCapturedImage(imageSrc);
         setPreviews((prevPreviews) => [...prevPreviews, imageSrc]);
@@ -177,14 +187,12 @@ const page = () => {
     }
   }, [webcamRef]);
 
-
   // Define video constraints to use the back camera
   const videoConstraints = {
-    facingMode: "environment", 
+    facingMode: "environment",
   };
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
+
+ 
 
   useEffect(() => {
     if (!api) {
@@ -197,118 +205,112 @@ const page = () => {
       setCurrent(api.selectedScrollSnap() + 1);
       setCount(api.scrollSnapList().length);
     });
-  }, [api,setPreviews]);
-
-
+  }, [api, setPreviews]);
 
   const [isPending, startTransition] = useTransition();
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     const user_id = user?.id;
-  // Wrap the entire submission logic in startTransition
-  startTransition(async () => {
-    try {
-      // Validate content
-      if (!text && imageFiles.length === 0 && !videoFile) {
-        toast({
-          variant: "destructive",
-          description: "Please add some content to your post (text, images, or video)",
-        });
-        return;
-      }
+    startTransition(async () => {
+      try {
+        // Validate content
+        if (!text && imageFiles.length === 0 && !videoFile) {
+          toast({
+            variant: "destructive",
+            description:
+              "Please add some content to your post (text, images, or video)",
+          });
+          return;
+        }
 
-      // Initialize arrays for URLs
-      let imageUrls: string[] = [];
-      let videoUrl: string | null = null;
+        // Initialize arrays for URLs
+        let imageUrls: string[] = [];
+        let videoUrl: string | null = null;
 
-      // Upload images if any
-      if (imageFiles.length > 0) {
-        const imageUploadPromises = imageFiles.map(async (file, index) => {
-        //   const path = `posts/${user_id}/images/${Date.now()}_${index}.jpg`;
-          const path = generateSupabaseFilePath(
-                      user?.id!,
-                      "post"
-                    );
-          const compressedImage = await compressImage(file, false);
-          if (!compressedImage) {
+        // Upload images if any
+        if (imageFiles.length > 0) {
+          const imageUploadPromises = imageFiles.map(async (file, index) => {
+        
+            const path = generateSupabaseFilePath(user?.id!, "post");
+            const compressedImage = await compressImage(file, false);
+            if (!compressedImage) {
+              toast({
+                variant: "destructive",
+                description: "Error compressing image",
+              });
+              return null;
+            }
+            return uploadToSupabase(supabase, compressedImage, path);
+          });
+
+          const urls = await Promise.all(imageUploadPromises);
+          imageUrls = urls.filter((url): url is string => url !== null);
+
+          if (imageUrls.length !== imageFiles.length) {
             toast({
               variant: "destructive",
-              description: "Error compressing image",
+              description: "Some images failed to upload",
             });
-            return null;
+            return;
           }
-          return uploadToSupabase(supabase, compressedImage, path);
-        });
+        }
 
-        const urls = await Promise.all(imageUploadPromises);
-        imageUrls = urls.filter((url): url is string => url !== null);
+        // Upload video if present
+        if (videoFile) {
+          const videoPath = `posts/${user?.id}/videos/${Date.now()}_video.mp4`;
+          videoUrl = await uploadToSupabase(supabase, videoFile, videoPath);
 
-        if (imageUrls.length !== imageFiles.length) {
+          if (!videoUrl) {
+            toast({
+              variant: "destructive",
+              description: "Failed to upload video",
+            });
+            return;
+          }
+        }
+
+        // Create post object
+        const newPost: Partial<Post> = {
+          user_id,
+          text: text || null,
+          image_urls: imageUrls,
+          video_url: videoUrl,
+          likes_count: 0,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Insert post into database
+        const { data: post, error } = await supabase
+          .from("posts")
+          .insert([newPost])
+          .select()
+          .single();
+
+        if (error) {
           toast({
             variant: "destructive",
-            description: "Some images failed to upload",
+            description: "Error creating post",
           });
+          console.error("Error creating post:", error);
           return;
         }
-      }
+        // Reset form
+        setText("");
+        setImageFiles([]);
+        setVideoFile(null);
+        setPreviews([]);
 
-      // Upload video if present
-      if (videoFile) {
-        const videoPath = `posts/${user?.id}/videos/${Date.now()}_video.mp4`;
-        videoUrl = await uploadToSupabase(supabase, videoFile, videoPath);
-
-        if (!videoUrl) {
-          toast({
-            variant: "destructive",
-            description: "Failed to upload video",
-          });
-          return;
-        }
-      }
-
-      // Create post object
-      const newPost: Partial<Post> = {
-        user_id,
-        text: text || null,
-        image_urls: imageUrls,
-        video_url: videoUrl,
-        likes_count: 0,
-        timestamp: new Date().toISOString(),
-      };
-
-      // Insert post into database
-      const { data: post, error } = await supabase
-        .from('posts')
-        .insert([newPost])
-        .select()
-        .single();
-
-      if (error) {
+        router.push("/feed");
+      } catch (error) {
+        console.error("Error in handleSubmit:", error);
         toast({
           variant: "destructive",
-          description: "Error creating post",
+          description: "An unexpected error occurred",
         });
-        console.error('Error creating post:', error);
-        return;
       }
-      // Reset form
-      setText("");
-      setImageFiles([]);
-      setVideoFile(null);
-      setPreviews([]);
+    });
+  };
 
-      // Optionally redirect or update UI
-      router.push('/feed'); 
-
-    } catch (error) {
-      console.error('Error in handleSubmit:', error);
-      toast({
-        variant: "destructive",
-        description: "An unexpected error occurred",
-      });
-    }
-  });
-};
   return (
     <div className="w-full p-3  relative min-h-screen">
       <div className="flex gap-2 w-fit items-center">
@@ -420,54 +422,55 @@ const handleSubmit = async () => {
         </div>
       </div>
       {previews.length > 0 && (
-  <div className="mx-auto max-w-xs my-8">
-    <Carousel setApi={setApi} className="w-full max-w-xs">
-      <CarouselContent>
-        {previews.reverse().map((preview, index) => (
-          <CarouselItem key={index} className="relative w-[280px] h-[280px]">
-            {/* Check if preview is video or image */}
-            {preview.endsWith(".mp4") || preview.endsWith(".webm") || preview.endsWith(".ogg") ? (
-              <video
-                src={preview}
-                className="w-full h-full object-cover"
-                controls
-              />
-            ) : (
-              <Image
-                src={preview}
-                alt={`Preview ${index}`}
-                width={280}
-                height={280}
-                style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: "8px", 
-                  }}
-                priority
-              />
-            )}
-            {/* Delete Button */}
-            <button
-              onClick={() => handleDelete(index)}
-              className="absolute bottom-2 right-2 bg-transparent text-white p-1 w-6 h-6 flex items-center justify-center rounded-full"
-            >
-              <Image src={Delete} priority sizes="22px" width={22} height={22}  className="" alt="delete"/>
-            </button>
-            <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
-      <span className="text-sm text-black">{current}/{count}</span>
-    </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
-   
-  </div>
-)}
-
+        <div className="mx-auto max-w-xs my-8">
+          <Carousel setApi={setApi} className="w-full max-w-xs">
+            <CarouselContent>
+              {previews.reverse().map((preview, index) => (
+                <CarouselItem
+                  key={index}
+                  className="relative w-[280px] h-[280px]"
+                >
+                    <Image
+                      src={preview}
+                      alt={`Preview ${index}`}
+                      width={280}
+                      height={280}
+                      style={{
+                        objectFit: "cover",
+                        objectPosition: "center",
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "8px",
+                      }}
+                      priority
+                    />
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="absolute bottom-2 right-2 bg-transparent text-white p-1 w-6 h-6 flex items-center justify-center rounded-full"
+                  >
+                    <Image
+                      src={Delete}
+                      priority
+                      sizes="22px"
+                      width={22}
+                      height={22}
+                      className=""
+                      alt="delete"
+                    />
+                  </button>
+                  <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
+                    <span className="text-sm text-black">
+                      {current}/{count}
+                    </span>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
+      )}
 
       {/* Camera view when it's open */}
       {isCameraOpen && (
@@ -500,99 +503,17 @@ const handleSubmit = async () => {
         disabled={isPending}
         className="mt-5 p-2 text-lg left-10 absolute bottom-9 w-[80%] rounded-full text-white"
       >
-       {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                "Create"
-              )}
+        {isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating...
+          </>
+        ) : (
+          "Create"
+        )}
       </Button>
     </div>
   );
 };
 
 export default page;
-
-// import React, { useRef, useState } from 'react';
-// import Webcam from 'react-webcam';
-// import { createClient } from "@/lib/supabase/client";
-
-// const page = ({ userId }: { userId: string }) => {
-//   const webcamRef = useRef(null);
-//   const [image, setImage] = useState<string | null>(null);
-//   const [imageUrl, setImageUrl] = useState<string | null>(null);
-//  const supabase  = createClient()
-//   // Capture image from webcam
-//   const capture = React.useCallback(() => {
-//     if (webcamRef.current) {
-//         const imageSrc = webcamRef.current.getScreenshot();
-//         if (imageSrc) {
-//           setImage(imageSrc);
-//         } else {
-//           console.error('Failed to capture screenshot.');
-//         }
-//       }
-//   }, [webcamRef]);
-
-//   // Handle image upload
-//   const handleUpload = async () => {
-//     if (image) {
-//       const blob = dataURItoBlob(image); // Convert base64 to Blob
-
-//       // Generate a unique file name for the user
-//       const fileName = `profile/${userId}_${Date.now()}.jpg`;
-
-//       const file = new File([blob], `profile/${userId}_${Date.now()}.jpg`, { type: blob.type });
-//       const uploadedUrl = await uploadToSupabase(supabase, file, fileName);
-
-//       if (uploadedUrl) {
-//         setImageUrl(uploadedUrl); // Store the URL after upload
-//         console.log('Uploaded image URL:', uploadedUrl);
-//         // Save the image URL to the database or state
-//       }
-//     }
-//   };
-//   const videoConstraints = {
-//     facingMode: 'environment', // 'user' for front camera, 'environment' for back camera
-//   };
-//   return (
-//     <div>
-//       <Webcam
-//         audio={false}
-//         ref={webcamRef}
-//         screenshotFormat="image/jpeg"
-//         videoConstraints={videoConstraints}
-//         width="100%"
-//       />
-//       <button onClick={capture}>Capture</button>
-
-//       {image && (
-//         <div>
-//           <img src={image} alt="Captured" style={{ width: "100%" }} />
-//           <button onClick={handleUpload}>Upload</button>
-//         </div>
-//       )}
-
-//       {imageUrl && (
-//         <div>
-//           <h3>Uploaded Image:</h3>
-//           <img src={imageUrl} alt="Uploaded" style={{ width: "100%" }} />
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// function dataURItoBlob(dataURI: string) {
-//     const byteString = atob(dataURI.split(',')[1]);
-//     const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-//     const arrayBuffer = new ArrayBuffer(byteString.length);
-//     const uintArray = new Uint8Array(arrayBuffer);
-//     for (let i = 0; i < byteString.length; i++) {
-//       uintArray[i] = byteString.charCodeAt(i);
-//     }
-//     return new Blob([arrayBuffer], { type: mimeString });
-//   }
-// export default page;
