@@ -4,7 +4,7 @@ import React from 'react'
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/nav/nav';
-const page = () => {
+const Feed = () => {
   const router = useRouter()
   const supabase = createClient();
 
@@ -24,4 +24,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Feed

@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import {User} from '@supabase/supabase-js'
 import { Iuser } from '../types'
     
 
@@ -10,5 +9,5 @@ interface UserState {
 
 export const useUser = create<UserState>()((set) => ({
   user: null,
-  setUser: (user) => set((state) => ({user})),
+  setUser: (user) => set(() => ({user})),
 }))

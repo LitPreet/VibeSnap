@@ -35,7 +35,7 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
   const coverImageRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const { user, setUser } = useUser();
+  const {  setUser } = useUser();
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const supabase = createClient();
   const { toast } = useToast();
@@ -61,7 +61,8 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
         setPreview(createFilePreview(compressedFile));
         setFile(compressedFile);
       }
-    } catch (error) {
+    } catch (err:unknown) {
+      console.error(err);
       toast({
         variant: "destructive",
         title: "Error",
@@ -151,6 +152,7 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
           throw new Error("Failed to update profile");
         }
       } catch (error) {
+        console.log(error);
         toast({
           variant: "destructive",
           title: "Error",

@@ -2,7 +2,7 @@ import EditProfile from "@/components/EditProfile";
 import {  createClient } from "@/lib/supabase/server";
 import React from "react";
 
-const page = async ({ params }: { params: { id: string } }) => {
+const Profile = async ({ params }: { params: { id: string } }) => {
   const supabase = await createClient();
   const { data: userInfo } = await supabase
     .from("users")
@@ -16,4 +16,4 @@ const page = async ({ params }: { params: { id: string } }) => {
   return <EditProfile userData={userInfo}/>;
 };
 
-export default page;
+export default Profile;

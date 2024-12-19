@@ -1,14 +1,13 @@
-import { redirect } from "next/navigation";
-// import LoginForm from "../../components/ui/forms/LoginForm";
-import { createClient } from "@/lib/supabase/server";
 import MansoryLayout from "@/components/mansoryLayout";
 import Logo from "@/assets/images/AppLogo.png";
 import Image from "next/image";
-import GoogleSignin from "@/components/ui/forms/LoginForm";
-
+// import GoogleSignin from "@/components/ui/forms/LoginForm";
+import dynamic from "next/dynamic";
+const GoogleSignin = dynamic(() => import("@/components/ui/forms/LoginForm"), {
+  ssr: false,
+});
 export default async function LoginPage() {
-  const supabase = await createClient();
- 
+
   return (
     <div className="h-screen w-full grid overflow-hidden">
       <MansoryLayout />

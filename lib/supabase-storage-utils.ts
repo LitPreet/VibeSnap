@@ -7,7 +7,7 @@ export async function uploadToSupabase(
 ): Promise<string | null> {
   try {
     // Upload the file
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const {  error: uploadError } = await supabase.storage
       .from("user-uploads")
       .upload(path, file, { 
         cacheControl: '3600', 

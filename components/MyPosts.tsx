@@ -8,24 +8,25 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const MyPosts = ({ id }: { id: string | undefined }) => {
-  if (!id) return;
   const [posts, setPosts] = useState<Post[]>([]);
   const [isPending, startTransition] = useTransition();
   const router = useRouter()
-
+  
   useEffect(() => {
     if (!id) return;
     const getPosts = async () => {
       try {
         const postsData = await fetchPosts(id);
         setPosts(postsData);
-      } catch (err) {}
+      } catch (err) {console.log(err)}
     };
     startTransition(() => {
       getPosts();
     });
   }, [id]);
-
+  
+  if (!id) return;
+  if(isPending) return <p>fetching</p>
   return (
     <div className="w-full px-3 mt-4">
       <h2 className="text-black text-lg  font-semibold">My Posts</h2>
@@ -61,11 +62,14 @@ const MyPosts = ({ id }: { id: string | undefined }) => {
                   {post.image_urls && post.image_urls.length > 0 && (
                     <div className="flex gap-2">
                       {post.image_urls.map((url: string, index: number) => (
-                        <img
+                        <Image
                           key={index}
                           src={url}
                           alt={`Post image ${index + 1}`}
                           className="w-24 h-24 object-cover rounded-md"
+                          priority={false}
+                          width={40}
+                          height={40}
                         />
                       ))}
                     </div>

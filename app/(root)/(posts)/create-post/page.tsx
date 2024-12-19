@@ -37,14 +37,13 @@ import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
-const page = () => {
+const CreatePost = () => {
   const { user } = useUser();
   const [text, setText] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const MAX_MEDIA_LIMIT = 3;
   const MAX_VIDEO_SIZE_MB = 10;
   const router = useRouter();
@@ -121,7 +120,7 @@ const page = () => {
 
     // Snapshot function to generate an image from the video
     const generateThumbnail = () => {
-      const thumbnail = snapImage(video, url);
+      const thumbnail = snapImage(video);
       if (thumbnail) {
         setPreviews((prevPreviews) => [...prevPreviews, thumbnail]); // Set thumbnail preview
       }
@@ -179,7 +178,7 @@ const page = () => {
         const imageFile = new File([blob], fileName, { type: "image/jpeg" });
 
         // Update state
-        setCapturedImage(imageSrc);
+        // setCapturedImage(imageSrc);
         setPreviews((prevPreviews) => [...prevPreviews, imageSrc]);
         setImageFiles((prevFiles) => [...prevFiles, imageFile]); // Add to imageFiles for upload
         setIsCameraOpen(false);
@@ -229,7 +228,7 @@ const page = () => {
 
         // Upload images if any
         if (imageFiles.length > 0) {
-          const imageUploadPromises = imageFiles.map(async (file, index) => {
+          const imageUploadPromises = imageFiles.map(async (file) => {
         
             const path = generateSupabaseFilePath(user?.id!, "post");
             const compressedImage = await compressImage(file, false);
@@ -280,7 +279,7 @@ const page = () => {
         };
 
         // Insert post into database
-        const { data: post, error } = await supabase
+        const {  error } = await supabase
           .from("posts")
           .insert([newPost])
           .select()
@@ -516,4 +515,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CreatePost;

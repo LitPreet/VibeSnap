@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import MyPosts from "@/components/MyPosts";
 
 
-const page = () => {
+const ProfileContent = () => {
   const { user } = useUser();  
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,7 +44,7 @@ const page = () => {
         <Link href={"/feed"} className="absolute m-3 top-0">
           <ArrowLeft className="text-white" size={25} />
         </Link>
-        <div className="rounded-full w-[112px] h-[112px]  relative left-5 top-24">
+        <div className="rounded-full w-[112px] h-[112px] relative left-5 top-24">
           <Image
             src={user?.profile_url! || NoDp}
             priority={true}
@@ -79,4 +79,13 @@ const page = () => {
   );
 };
 
-export default page;
+// Main component that wraps the content in Suspense
+const MainProfile = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfileContent />
+    </Suspense>
+  );
+};
+
+export default MainProfile;

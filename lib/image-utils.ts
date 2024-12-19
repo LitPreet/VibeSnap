@@ -46,7 +46,7 @@ export function generateSupabaseFilePath(
 }
 
  // Function to generate a snapshot image from the video
- export const snapImage = (video: HTMLVideoElement, url: string) => {
+ export const snapImage = (video: HTMLVideoElement) => {
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
