@@ -1,39 +1,53 @@
-'use client'
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import Image1 from "@/assets/images/image4.jpg";
-import Image2 from "@/assets/images/image5.jpg";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/lib/store/user";
-import { useRouter } from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation";
+import NoCover from "@/assets/images/cover image.jpg";
+import NoDp from "@/assets/images/nodp.png";
+import { useToast } from "@/hooks/use-toast";
+import { createClient } from "@/lib/supabase/client";
 const page = () => {
-    const {user} = useUser();
-    const router = useRouter()
+  const { user } = useUser();
+  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fromEdit = searchParams.get("fromEdit");
+    if (fromEdit === "success") {
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+    }
+  }, [searchParams, toast]);
   return (
     <div className="w-full">
       <div className="w-full h-40 bg-green-300 relative">
         <Image
-          src={Image1}
+          src={user?.cover_url! || NoCover}
           alt="cover image"
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, 100vw"
           priority={true}
           fill
           style={{
             objectFit: "cover",
           }}
         />
-        <Link href={"/dasboard"} className="absolute m-3 top-0">
+        <Link href={"/dashboard"} className="absolute m-3 top-0">
           <ArrowLeft className="text-white" size={25} />
         </Link>
         <div className="rounded-full w-[112px] h-[112px]  relative left-5 top-24">
           <Image
-            src={Image2}
+            src={user?.profile_url! || NoDp}
             priority={true}
             alt="profile"
-            sizes="100vw"
+            sizes="112px"
             fill
             style={{
               objectFit: "cover",
@@ -51,7 +65,12 @@ const page = () => {
           Edit Profile
         </Button>
       </div>
-
+      <div className="flex flex-col w-full my-2 px-3 items-start gap-1">
+        <h2 className="text-xl m-0 font-semibold capitalize text-black">
+          {user?.display_name}
+        </h2>
+        <p className="text-md text-black">{user?.bio}</p>
+      </div>
     </div>
   );
 };

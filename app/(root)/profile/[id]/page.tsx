@@ -10,11 +10,10 @@ const page = async ({ params }: { params: { id: string } }) => {
     .eq("id", params.id)
     .single();
 
-    console.log(userInfo,'h')
   if (!userInfo?.id) {
     return <h1 className="text-white">Not found</h1>;
   }
-  return <EditProfile user={userInfo}/>;
+  return <EditProfile userData={userInfo}/>;
 };
 
 export default page;
