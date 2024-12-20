@@ -12,14 +12,14 @@ const Navbar = () => {
   return (
     <div className="w-full ">
       <Link
-        href={"/profile"}
+        href={`/profile/${user?.id}`}
       >
       <div  className="flex items-center gap-2  cursor-pointer  w-fit">
-        <div className="relative w-[60px] h-[60px]">
+        <div className="relative w-[70px] h-[70px]">
           <Image
             src={user?.profile_url || NoDp}
             alt="userImage"
-            sizes="60px"
+            sizes="70px"
             priority
             style={{ objectFit: "cover" }}
             fill

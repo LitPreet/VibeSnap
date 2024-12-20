@@ -9,7 +9,7 @@ const GoogleSignin = dynamic(() => import("@/components/ui/forms/LoginForm"), {
 export default async function LoginPage() {
 
   return (
-    <div className="h-screen w-full grid overflow-hidden">
+    <div className="h-screen w-full grid overflow-hidden relative">
       <MansoryLayout />
       <div className="w-full bg-white absolute bottom-0 xs:h-[200px] xs-390:h-[360px] md:h-[200px] rounded-tr-[90px] rounded-tl-[90px] flex flex-col items-center">
         <div className="flex gap-1 mr-10 mt-8 p-0  items-center justify-center w-full">

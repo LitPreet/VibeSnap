@@ -23,12 +23,14 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/store/user";
+import NoCover from "@/assets/images/cover image.jpg";
+import NoDp from "@/assets/images/nodp.png";
 
 const EditProfile = ({ userData }: { userData: Iuser }) => {
   const [profilePreview, setProfilePreview] = useState(
-    userData?.profile_url || ""
+    userData?.profile_url || NoDp
   );
-  const [coverPreview, setCoverPreview] = useState(userData?.cover_url || "");
+  const [coverPreview, setCoverPreview] = useState(userData?.cover_url || NoCover);
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
   const profileImageRef = useRef<HTMLInputElement>(null);
@@ -147,7 +149,7 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
           });
           setProfileFile(null);
           setCoverFile(null);
-          router.push("/profile?fromEdit=success");
+          router.push(`/profile/${userData?.id}?fromEdit=success`);
         } else {
           throw new Error("Failed to update profile");
         }
@@ -186,12 +188,12 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
                 Edit Profile
               </span>
             </Link>
-            <div className="rounded-full w-[112px] h-[112px]  relative left-5 top-24">
+            <div className="rounded-full  w-[120px] h-[120px]  relative left-5 top-24">
               <Image
                 src={profilePreview}
                 priority={true}
                 alt="cover image"
-                sizes="112px"
+                sizes="120px"
                 fill
                 style={{
                   objectFit: "cover",

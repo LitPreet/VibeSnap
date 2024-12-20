@@ -53,8 +53,7 @@ const CreatePost = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0)
-  ;
+  const [count, setCount] = useState(0);
   const handleImageFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -177,21 +176,12 @@ const CreatePost = () => {
         const fileName = `capture_${Date.now()}.jpg`;
         const imageFile = new File([blob], fileName, { type: "image/jpeg" });
 
-        // Update state
-        // setCapturedImage(imageSrc);
         setPreviews((prevPreviews) => [...prevPreviews, imageSrc]);
         setImageFiles((prevFiles) => [...prevFiles, imageFile]); // Add to imageFiles for upload
         setIsCameraOpen(false);
       }
     }
   }, [webcamRef]);
-
-  // Define video constraints to use the back camera
-  const videoConstraints = {
-    facingMode: "environment",
-  };
-
- 
 
   useEffect(() => {
     if (!api) {
@@ -229,7 +219,6 @@ const CreatePost = () => {
         // Upload images if any
         if (imageFiles.length > 0) {
           const imageUploadPromises = imageFiles.map(async (file) => {
-        
             const path = generateSupabaseFilePath(user?.id!, "post");
             const compressedImage = await compressImage(file, false);
             if (!compressedImage) {
@@ -279,7 +268,7 @@ const CreatePost = () => {
         };
 
         // Insert post into database
-        const {  error } = await supabase
+        const { error } = await supabase
           .from("posts")
           .insert([newPost])
           .select()
@@ -311,7 +300,7 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="w-full p-3  relative min-h-screen">
+    <div className="w-full p-3  relative min-h-[90vh]">
       <div className="flex gap-2 w-fit items-center">
         <Link href={"/profile"}>
           <ArrowLeft className="text-black cursor-pointer" size={27} />
@@ -320,19 +309,61 @@ const CreatePost = () => {
           New Post
         </p>
       </div>
+      {previews.length > 0 && (
+        <div className="mx-auto max-w-xs my-8">
+          <Carousel setApi={setApi} className="w-full max-w-xs">
+            <CarouselContent>
+              {previews.reverse().map((preview, index) => (
+                <CarouselItem
+                  key={index}
+                  className="relative w-[280px] h-[280px]"
+                >
+                  <Image
+                    src={preview}
+                    alt={`Preview ${index}`}
+                    width={280}
+                    height={280}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "8px",
+                    }}
+                    priority
+                  />
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="absolute bottom-2 right-2 bg-transparent font-bold text-white p-1 w-6 h-6 flex items-center justify-center rounded-full"
+                  >
+                    <Image
+                      src={Delete}
+                      priority
+                      sizes="24px"
+                      width={24}
+                      height={24}
+                      className=""
+                      alt="delete"
+                    />
+                  </button>
+                  <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
+                    <span className="text-sm text-black">
+                      {current}/{count}
+                    </span>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="hidden md:block">
+              <CarouselPrevious />
+              <CarouselNext />
+            </div>
+          </Carousel>
+        </div>
+      )}
 
-      {/* Text Area for the post */}
-      <div className="h-60 sm:h-48 w-full font-karla border-none my-4">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full h-full outline-none p-3 rounded-md bg-[#D9D9D99C]"
-          placeholder="What's on your mind?"
-        ></textarea>
-      </div>
-
-      {/* File Upload Section */}
-      <div className="flex flex-col w-full space-y-2">
+{previews && previews.length > 0 && (
+        <div className="flex flex-col w-full space-y-2">
         <label
           htmlFor="imageInput"
           className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
@@ -369,9 +400,9 @@ const CreatePost = () => {
         />
 
         {/* File type buttons */}
-        <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
           <label
-            htmlFor="imageInput"
+            // htmlFor="imageInput"
             className="cursor-pointer flex items-center gap-2 w-fit"
             onClick={() => setIsCameraOpen(true)}
           >
@@ -420,55 +451,107 @@ const CreatePost = () => {
           </label>
         </div>
       </div>
-      {previews.length > 0 && (
-        <div className="mx-auto max-w-xs my-8">
-          <Carousel setApi={setApi} className="w-full max-w-xs">
-            <CarouselContent>
-              {previews.reverse().map((preview, index) => (
-                <CarouselItem
-                  key={index}
-                  className="relative w-[280px] h-[280px]"
-                >
-                    <Image
-                      src={preview}
-                      alt={`Preview ${index}`}
-                      width={280}
-                      height={280}
-                      style={{
-                        objectFit: "cover",
-                        objectPosition: "center",
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "8px",
-                      }}
-                      priority
-                    />
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="absolute bottom-2 right-2 bg-transparent text-white p-1 w-6 h-6 flex items-center justify-center rounded-full"
-                  >
-                    <Image
-                      src={Delete}
-                      priority
-                      sizes="22px"
-                      width={22}
-                      height={22}
-                      className=""
-                      alt="delete"
-                    />
-                  </button>
-                  <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
-                    <span className="text-sm text-black">
-                      {current}/{count}
-                    </span>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+      )}
+      {/* Text Area for the post */}
+      <div className="h-60 sm:h-48 w-full font-karla border-none my-4">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="w-full h-full outline-none p-3 rounded-md bg-[#D9D9D99C]"
+          placeholder="What's on your mind?"
+        ></textarea>
+      </div>
+
+      {/* File Upload Section */}
+      {previews.length === 0 && (
+        <div className="flex flex-col w-full space-y-2">
+        <label
+          htmlFor="imageInput"
+          className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
+        >
+          <Image
+            src={folder}
+            alt="folder"
+            priority
+            width={20}
+            height={20}
+            style={{ height: "20px", width: "auto" }}
+            sizes="20px"
+          />
+          <span className="font-semibold text-[16px]">Choose the File</span>
+        </label>
+
+        {/* Hidden file inputs */}
+        <input
+          type="file"
+          multiple
+          ref={imageInputRef}
+          onChange={handleImageFileChange}
+          className="hidden"
+          accept="image/*"
+          id="imageInput"
+        />
+        <input
+          type="file"
+          ref={videoInputRef}
+          onChange={handleVideoFileChange}
+          className="hidden"
+          accept=".mp4"
+          id="videoInput"
+        />
+
+        {/* File type buttons */}
+    <div className="flex flex-col gap-2">
+          <label
+            // htmlFor="imageInput"
+            className="cursor-pointer flex items-center gap-2 w-fit"
+            onClick={() => setIsCameraOpen(true)}
+          >
+            <Image
+              src={camera}
+              alt="camera"
+              priority
+              width={20}
+              height={20}
+              style={{ height: "20px", width: "auto" }}
+              sizes="20px"
+            />
+            <span className="font-semibold text-[16px]">Camera</span>
+          </label>
+
+          <label
+            htmlFor="videoInput"
+            className="cursor-pointer flex gap-2 items-center w-fit"
+          >
+            <Image
+              src={video}
+              alt="video"
+              priority
+              width={20}
+              height={20}
+              style={{ height: "20px", width: "auto" }}
+              sizes="20px"
+            />
+            <span className="font-semibold text-[16px]">Video</span>
+          </label>
+
+          <label
+            htmlFor="imageInput"
+            className="cursor-pointer flex items-center  gap-2 w-fit"
+          >
+            <Image
+              src={gallery}
+              alt="gallery"
+              priority
+              width={20}
+              height={20}
+              style={{ height: "20px", width: "auto" }}
+              sizes="20px"
+            />
+            <span className="font-semibold text-[16px]">Photos</span>
+          </label>
         </div>
+      </div>
       )}
 
       {/* Camera view when it's open */}
@@ -484,7 +567,6 @@ const CreatePost = () => {
             audio={false}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
-            videoConstraints={videoConstraints}
             className="w-full h-full object-cover"
           />
           <Button
