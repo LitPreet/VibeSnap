@@ -1,6 +1,6 @@
 import { fetchPosts } from "@/lib/actions/post";
 import { Post } from "@/lib/types";
-import React, { useCallback, useEffect, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import NoData from "@/assets/images/no-data.png";
 import Image from "next/image";
@@ -14,7 +14,7 @@ const MyPosts = ({ id }: { id: string | undefined }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const router = useRouter();
 
-  
+
  const getPosts = useCallback(async () => {
   if (!id) return;
   try {
