@@ -87,7 +87,7 @@ const CreatePost = () => {
     }
 
     setImageFiles((prevFiles) => [...prevFiles, ...selectedFileArray]);
-    setPreviews((prevPreviews) => [...prevPreviews, ...filePreviews]);
+    setPreviews((prevPreviews) => [ ...filePreviews,...prevPreviews]);
   };
 
   const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +121,7 @@ const CreatePost = () => {
     const generateThumbnail = () => {
       const thumbnail = snapImage(video);
       if (thumbnail) {
-        setPreviews((prevPreviews) => [...prevPreviews, thumbnail]); // Set thumbnail preview
+        setPreviews((prevPreviews) => [thumbnail,...prevPreviews]); // Set thumbnail preview
       }
     };
 
@@ -133,7 +133,7 @@ const CreatePost = () => {
     // Set up video element
     video.preload = "metadata";
     video.src = url;
-    video.muted = true;
+    // video.muted = true;
     video.playsInline = true;
     video.play();
 
@@ -176,7 +176,7 @@ const CreatePost = () => {
         const fileName = `capture_${Date.now()}.jpg`;
         const imageFile = new File([blob], fileName, { type: "image/jpeg" });
 
-        setPreviews((prevPreviews) => [...prevPreviews, imageSrc]);
+        setPreviews((prevPreviews) => [imageSrc,...prevPreviews]);
         setImageFiles((prevFiles) => [...prevFiles, imageFile]); // Add to imageFiles for upload
         setIsCameraOpen(false);
       }
@@ -313,7 +313,7 @@ const CreatePost = () => {
         <div className="mx-auto max-w-xs my-8">
           <Carousel setApi={setApi} className="w-full max-w-xs">
             <CarouselContent>
-              {previews.reverse().map((preview, index) => (
+              {previews.map((preview, index) => (
                 <CarouselItem
                   key={index}
                   className="relative w-[280px] h-[280px]"

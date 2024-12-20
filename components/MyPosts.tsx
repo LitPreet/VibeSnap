@@ -40,7 +40,7 @@ const MyPosts = ({ id }: { id: string | undefined }) => {
         {user?.id === id ? "My Posts" : `Posts`}
       </h2>
       {posts.length === 0 ? (
-        <div className="w-full h-52 my-2 flex-col flex justify-center items-end">
+        <div className="w-full h-52 my-2 flex-col flex justify-end items-center">
           <Image
             src={NoData}
             alt="no data"
