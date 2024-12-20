@@ -180,7 +180,7 @@ const EditProfile = ({ userData }: { userData: Iuser }) => {
               }}
             />
             <Link
-              href="/profile"
+              href={`/profile/${userData?.id}`}
               className="absolute top-0 m-3 flex items-center gap-2"
             >
               <ArrowLeft className="text-white" size={25} />

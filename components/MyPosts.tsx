@@ -1,7 +1,6 @@
 import { fetchPosts } from "@/lib/actions/post";
 import { Post } from "@/lib/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { Button } from "./ui/button";
 import NoData from "@/assets/images/no-data.png";
 import Image from "next/image";
 import { Plus } from "lucide-react";
@@ -41,7 +40,7 @@ const MyPosts = ({ id }: { id: string | undefined }) => {
         {user?.id === id ? "My Posts" : `Posts`}
       </h2>
       {posts.length === 0 ? (
-        <div className="w-full h-52 my-2 flex-col flex justify-center items-center">
+        <div className="w-full h-52 my-2 flex-col flex justify-center items-end">
           <Image
             src={NoData}
             alt="no data"
@@ -55,13 +54,13 @@ const MyPosts = ({ id }: { id: string | undefined }) => {
               ? "You haven’t created any posts yet."
               : "This account does not have any posts yet."}
           </p>
-          {user?.id === id && (<Button
+          {/* {user?.id === id && (<Button
             className="mt-6 rounded-full"
             onClick={() => router.push("/create-post")}
           >
             Create Post
             <Plus size={27} className="text-white font-bold" />
-          </Button>)}
+          </Button>)} */}
          
         </div>
       ) : (

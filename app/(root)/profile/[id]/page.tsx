@@ -96,7 +96,7 @@ const ProfileContent = ({ id }: { id: string }) => {
       </div>
       <div
         className={`flex flex-col w-full my-2 px-3 items-start gap-1 ${
-          currentuserData?.id === user?.id ? "mt-0" : "mt-16"
+          currentuserData?.id === user?.id ? "mt-4" : "mt-16"
         }`}
       >
         <h2 className="text-xl m-0 font-semibold capitalize text-black">
