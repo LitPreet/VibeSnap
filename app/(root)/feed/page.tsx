@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import Navbar from "@/components/nav/navbar";
 import FeedPostsList from "@/components/FeedPostsList";
 // const FeedPostsList = dynamic(() => import('@/components/FeedPostsList'), {

@@ -2,7 +2,7 @@ import { formatDistanceToNow, format, isYesterday } from "date-fns";
 export function throttle(cb: (...args: any[]) => void, del: number) {
     let lastExec = 0;
     return function (...args: any[]) {
-      let now = Date.now();
+      const now = Date.now();
       if (now - lastExec >= del) {
         cb(...args);
       }
