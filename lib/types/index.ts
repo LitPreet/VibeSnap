@@ -21,4 +21,6 @@ export interface Post {
 	likes_count: number;
 	created_at: string;
 	updated_at: string;
+	is_liked?: boolean;
+	likes?: Array<{ user_id: string }>;
 }
