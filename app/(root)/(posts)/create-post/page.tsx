@@ -87,7 +87,7 @@ const CreatePost = () => {
     }
 
     setImageFiles((prevFiles) => [...prevFiles, ...selectedFileArray]);
-    setPreviews((prevPreviews) => [ ...filePreviews,...prevPreviews]);
+    setPreviews((prevPreviews) => [...filePreviews, ...prevPreviews]);
   };
 
   const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +121,7 @@ const CreatePost = () => {
     const generateThumbnail = () => {
       const thumbnail = snapImage(video);
       if (thumbnail) {
-        setPreviews((prevPreviews) => [thumbnail,...prevPreviews]); // Set thumbnail preview
+        setPreviews((prevPreviews) => [thumbnail, ...prevPreviews]); // Set thumbnail preview
       }
     };
 
@@ -176,7 +176,7 @@ const CreatePost = () => {
         const fileName = `capture_${Date.now()}.jpg`;
         const imageFile = new File([blob], fileName, { type: "image/jpeg" });
 
-        setPreviews((prevPreviews) => [imageSrc,...prevPreviews]);
+        setPreviews((prevPreviews) => [imageSrc, ...prevPreviews]);
         setImageFiles((prevFiles) => [...prevFiles, imageFile]); // Add to imageFiles for upload
         setIsCameraOpen(false);
       }
@@ -300,299 +300,295 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="w-full p-3  relative min-h-[90vh]">
-      <div className="flex gap-2 w-fit items-center">
-        <Link href={"/profile"}>
-          <ArrowLeft className="text-black cursor-pointer" size={27} />
-        </Link>
-        <p className="font-extrabold font-karla text-xl tracking-wide text-black">
-          New Post
-        </p>
-      </div>
-      {previews.length > 0 && (
-        <div className="mx-auto max-w-xs my-8">
-          <Carousel setApi={setApi} className="w-full max-w-xs">
-            <CarouselContent>
-              {previews.map((preview, index) => (
-                <CarouselItem
-                  key={index}
-                  className="relative w-[280px] h-[280px]"
-                >
-                  <Image
-                    src={preview}
-                    alt={`Preview ${index}`}
-                    width={280}
-                    height={280}
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: "center",
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: "8px",
-                    }}
-                    priority
-                  />
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="absolute bottom-2 right-2 bg-transparent font-bold text-white p-1 w-6 h-6 flex items-center justify-center rounded-full"
+    <div className="w-full p-3 flex flex-col justify-between  relative min-h-[90vh]">
+      <div>
+        <div className="flex gap-2 w-fit items-center">
+          <Link href={`/profile/${user?.id}`}>
+            <ArrowLeft className="text-black cursor-pointer" size={27} />
+          </Link>
+          <p className="font-extrabold font-karla text-xl tracking-wide text-black">
+            New Post
+          </p>
+        </div>
+        {previews.length > 0 && (
+          <div className="mx-auto max-w-xs my-8">
+            <Carousel setApi={setApi} className="w-full max-w-xs">
+              <CarouselContent>
+                {previews.map((preview, index) => (
+                  <CarouselItem
+                    key={index}
+                    className="relative w-[280px] h-[280px]"
                   >
                     <Image
-                      src={Delete}
+                      src={preview}
+                      alt={`Preview ${index}`}
+                      className="object-cover rounded-lg"
+                      fill
                       priority
-                      sizes="24px"
-                      width={24}
-                      height={24}
-                      className=""
-                      alt="delete"
                     />
-                  </button>
-                  <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
-                    <span className="text-sm text-black">
-                      {current}/{count}
-                    </span>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="hidden md:block">
-              <CarouselPrevious />
-              <CarouselNext />
-            </div>
-          </Carousel>
-        </div>
-      )}
-
-{previews && previews.length > 0 && (
-        <div className="flex flex-col w-full space-y-2">
-        <label
-          htmlFor="imageInput"
-          className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
-        >
-          <Image
-            src={folder}
-            alt="folder"
-            priority
-            width={20}
-            height={20}
-            style={{ height: "20px", width: "auto" }}
-            sizes="20px"
-          />
-          <span className="font-semibold text-[16px]">Choose the File</span>
-        </label>
-
-        {/* Hidden file inputs */}
-        <input
-          type="file"
-          multiple
-          ref={imageInputRef}
-          onChange={handleImageFileChange}
-          className="hidden"
-          accept="image/*"
-          id="imageInput"
-        />
-        <input
-          type="file"
-          ref={videoInputRef}
-          onChange={handleVideoFileChange}
-          className="hidden"
-          accept=".mp4"
-          id="videoInput"
-        />
-
-        {/* File type buttons */}
-    <div className="flex flex-col gap-2">
-          <label
-            // htmlFor="imageInput"
-            className="cursor-pointer flex items-center gap-2 w-fit"
-            onClick={() => setIsCameraOpen(true)}
-          >
-            <Image
-              src={camera}
-              alt="camera"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Camera</span>
-          </label>
-
-          <label
-            htmlFor="videoInput"
-            className="cursor-pointer flex gap-2 items-center w-fit"
-          >
-            <Image
-              src={video}
-              alt="video"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Video</span>
-          </label>
-
-          <label
-            htmlFor="imageInput"
-            className="cursor-pointer flex items-center  gap-2 w-fit"
-          >
-            <Image
-              src={gallery}
-              alt="gallery"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Photos</span>
-          </label>
-        </div>
-      </div>
-      )}
-      {/* Text Area for the post */}
-      <div className="h-60 sm:h-48 w-full font-karla border-none my-4">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full h-full outline-none p-3 rounded-md bg-[#D9D9D99C]"
-          placeholder="What's on your mind?"
-        ></textarea>
-      </div>
-
-      {/* File Upload Section */}
-      {previews.length === 0 && (
-        <div className="flex flex-col w-full space-y-2">
-        <label
-          htmlFor="imageInput"
-          className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
-        >
-          <Image
-            src={folder}
-            alt="folder"
-            priority
-            width={20}
-            height={20}
-            style={{ height: "20px", width: "auto" }}
-            sizes="20px"
-          />
-          <span className="font-semibold text-[16px]">Choose the File</span>
-        </label>
-
-        {/* Hidden file inputs */}
-        <input
-          type="file"
-          multiple
-          ref={imageInputRef}
-          onChange={handleImageFileChange}
-          className="hidden"
-          accept="image/*"
-          id="imageInput"
-        />
-        <input
-          type="file"
-          ref={videoInputRef}
-          onChange={handleVideoFileChange}
-          className="hidden"
-          accept=".mp4"
-          id="videoInput"
-        />
-
-        {/* File type buttons */}
-    <div className="flex flex-col gap-2">
-          <label
-            // htmlFor="imageInput"
-            className="cursor-pointer flex items-center gap-2 w-fit"
-            onClick={() => setIsCameraOpen(true)}
-          >
-            <Image
-              src={camera}
-              alt="camera"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Camera</span>
-          </label>
-
-          <label
-            htmlFor="videoInput"
-            className="cursor-pointer flex gap-2 items-center w-fit"
-          >
-            <Image
-              src={video}
-              alt="video"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Video</span>
-          </label>
-
-          <label
-            htmlFor="imageInput"
-            className="cursor-pointer flex items-center  gap-2 w-fit"
-          >
-            <Image
-              src={gallery}
-              alt="gallery"
-              priority
-              width={20}
-              height={20}
-              style={{ height: "20px", width: "auto" }}
-              sizes="20px"
-            />
-            <span className="font-semibold text-[16px]">Photos</span>
-          </label>
-        </div>
-      </div>
-      )}
-
-      {/* Camera view when it's open */}
-      {isCameraOpen && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black flex flex-col items-center justify-center z-50">
-          <Button
-            onClick={() => setIsCameraOpen(false)}
-            className="absolute top-5 right-5 w-10 h-10 bg-red-500 text-white p-2 rounded-full z-50"
-          >
-            ✕
-          </Button>
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="w-full h-full object-cover"
-          />
-          <Button
-            type="button"
-            onClick={capturePhoto}
-            className="absolute bottom-10 p-4 rounded-md text-white"
-          >
-            Capture Photo
-          </Button>
-        </div>
-      )}
-
-      <Button
-        onClick={handleSubmit}
-        disabled={isPending}
-        className="mt-5 p-2 text-lg left-10 absolute bottom-9 w-[80%] rounded-full text-white"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating...
-          </>
-        ) : (
-          "Create"
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="absolute bottom-2 right-2 bg-transparent font-bold text-white p-1 w-[30px] h-[30px] flex items-center justify-center rounded-full"
+                    >
+                      <Image
+                        src={Delete}
+                        priority
+                        sizes="24px"
+                        width={30}
+                        height={30}
+                        className=""
+                        alt="delete"
+                      />
+                    </button>
+                    <div className="px-2 py-1 absolute top-2 right-2 rounded-full  bg-white">
+                      <span className="text-sm text-black">
+                        {current}/{count}
+                      </span>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden md:block">
+                <CarouselPrevious />
+                <CarouselNext />
+              </div>
+            </Carousel>
+          </div>
         )}
-      </Button>
+
+        {previews && previews.length > 0 && (
+          <div className="flex flex-col w-full space-y-2">
+            <label
+              htmlFor="imageInput"
+              className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
+            >
+              <Image
+                src={folder}
+                alt="folder"
+                priority
+                width={20}
+                height={20}
+                style={{ height: "20px", width: "auto" }}
+                sizes="20px"
+              />
+              <span className="font-semibold text-[16px]">Choose the File</span>
+            </label>
+
+            {/* Hidden file inputs */}
+            <input
+              type="file"
+              multiple
+              ref={imageInputRef}
+              onChange={handleImageFileChange}
+              className="hidden"
+              accept="image/*"
+              id="imageInput"
+            />
+            <input
+              type="file"
+              ref={videoInputRef}
+              onChange={handleVideoFileChange}
+              className="hidden"
+              accept=".mp4"
+              id="videoInput"
+            />
+
+            {/* File type buttons */}
+            <div className="flex flex-col gap-2">
+              <label
+                // htmlFor="imageInput"
+                className="cursor-pointer flex items-center gap-2 w-fit"
+                onClick={() => setIsCameraOpen(true)}
+              >
+                <Image
+                  src={camera}
+                  alt="camera"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Camera</span>
+              </label>
+
+              <label
+                htmlFor="videoInput"
+                className="cursor-pointer flex gap-2 items-center w-fit"
+              >
+                <Image
+                  src={video}
+                  alt="video"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Video</span>
+              </label>
+
+              <label
+                htmlFor="imageInput"
+                className="cursor-pointer flex items-center  gap-2 w-fit"
+              >
+                <Image
+                  src={gallery}
+                  alt="gallery"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Photos</span>
+              </label>
+            </div>
+          </div>
+        )}
+        {/* Text Area for the post */}
+        <div className="h-60 sm:h-48  w-full font-karla border-none my-4">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="w-full h-full outline-none p-3 rounded-md bg-[#D9D9D99C]"
+            placeholder="What's on your mind?"
+          ></textarea>
+        </div>
+
+        {/* File Upload Section */}
+        {previews.length === 0 && (
+          <div className="flex flex-col w-full space-y-2">
+            <label
+              htmlFor="imageInput"
+              className="cursor-pointer hidden sm:flex gap-2 items-center w-fit"
+            >
+              <Image
+                src={folder}
+                alt="folder"
+                priority
+                width={20}
+                height={20}
+                style={{ height: "20px", width: "auto" }}
+                sizes="20px"
+              />
+              <span className="font-semibold text-[16px]">Choose the File</span>
+            </label>
+
+            {/* Hidden file inputs */}
+            <input
+              type="file"
+              multiple
+              ref={imageInputRef}
+              onChange={handleImageFileChange}
+              className="hidden"
+              accept="image/*"
+              id="imageInput"
+            />
+            <input
+              type="file"
+              ref={videoInputRef}
+              onChange={handleVideoFileChange}
+              className="hidden"
+              accept=".mp4"
+              id="videoInput"
+            />
+
+            {/* File type buttons */}
+            <div className="flex flex-col gap-2">
+              <label
+                // htmlFor="imageInput"
+                className="cursor-pointer flex items-center gap-2 w-fit"
+                onClick={() => setIsCameraOpen(true)}
+              >
+                <Image
+                  src={camera}
+                  alt="camera"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Camera</span>
+              </label>
+
+              <label
+                htmlFor="videoInput"
+                className="cursor-pointer flex gap-2 items-center w-fit"
+              >
+                <Image
+                  src={video}
+                  alt="video"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Video</span>
+              </label>
+
+              <label
+                htmlFor="imageInput"
+                className="cursor-pointer flex items-center  gap-2 w-fit"
+              >
+                <Image
+                  src={gallery}
+                  alt="gallery"
+                  priority
+                  width={20}
+                  height={20}
+                  style={{ height: "20px", width: "auto" }}
+                  sizes="20px"
+                />
+                <span className="font-semibold text-[16px]">Photos</span>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Camera view when it's open */}
+        {isCameraOpen && (
+          <div className="fixed top-0 left-0 w-full h-full bg-black flex flex-col items-center justify-center z-50">
+            <Button
+              onClick={() => setIsCameraOpen(false)}
+              className="absolute top-5 right-5 w-10 h-10 bg-red-500 text-white p-2 rounded-full z-50"
+            >
+              ✕
+            </Button>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className="w-full h-full object-cover"
+            />
+            <Button
+              type="button"
+              onClick={capturePhoto}
+              className="absolute bottom-10 p-4 rounded-md text-white"
+            >
+              Capture Photo
+            </Button>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col items-center mt-5 sm:mt-8">
+        <Button
+          onClick={handleSubmit}
+          disabled={isPending}
+          className="mt-5 p-2 text-lg  w-[80%] rounded-full text-white"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            "Create"
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

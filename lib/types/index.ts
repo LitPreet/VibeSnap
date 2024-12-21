@@ -10,6 +10,9 @@ export type Iuser = {
 
 export interface Post {
 	id: string;
+	userName?: {
+		display_name:string;
+	}
 	user_id: string;
 	text: string | null;
 	timestamp: string;

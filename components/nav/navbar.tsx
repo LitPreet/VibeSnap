@@ -27,11 +27,11 @@ const Navbar = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span className="text-[11px] font-normal text-gray-400 tracking-wide">
+          <span className="text-sm font-normal text-gray-400 tracking-wide">
             {" "}
             Welcome {isReturningUser && "Back"}
           </span>
-          <span className="text-md text-black font-semibold tracking-wide capitalize">
+          <span className="text-lg text-black font-semibold tracking-wide capitalize">
             {user?.display_name}
           </span>
         </div>
