@@ -1,31 +1,23 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/nav/navbar";
 import FeedPostsList from "@/components/FeedPostsList";
+// const FeedPostsList = dynamic(() => import('@/components/FeedPostsList'), {
+//   loading: () => <FeedSkeleton />,
+// });
 import { Post } from "@/lib/types";
 import { throttle } from "@/lib/helpers-utils";
 import { useUser } from "@/lib/store/user";
 
 const Feed = () => {
-  const router = useRouter();
   const supabase = createClient();
   const { user } = useUser();
   const loadingRef = useRef(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const lastFetchedPageRef = useRef(1);
-
-  const handleSignout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      router.push("/login");
-    } else {
-      console.error("Error signing out:", error.message);
-    }
-  };
 
   const fetchPosts = useCallback(async (pageNum: number) => {
     if (loadingRef.current) return;
@@ -164,9 +156,10 @@ const Feed = () => {
     <div className="p-3 min-h-screen overflow-y-scroll overflow-x-hidden w-full">
       <Navbar />
       <FeedPostsList posts={posts} onLike={handleLike} />
-      <Button onClick={handleSignout}>SIGN OUT</Button>
     </div>
   );
 };
 
 export default Feed;
+// {/* <Button onClick={handleSignout}>SIGN OUT</Button> */}
+

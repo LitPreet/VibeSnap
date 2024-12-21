@@ -72,24 +72,18 @@ const ShareModal = ({
   if (!shareModalOpen) return null;
 
   const handleCopy = () => {
-    const currentUrl =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/feed"
-        : window.location.href;
+    const currentUrl = window.location.href;
 
     navigator.clipboard.writeText(currentUrl).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset copy status after 2 seconds
+      setTimeout(() => setCopied(false), 2000); 
     });
   };
 
   const getCurrentUrl = () => {
-    const currentUrl =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000/feed"
-        : window.location.href;
+    const currentUrl =window.location.href;
 
-    return currentUrl ? currentUrl : ""; // Return empty string if URL is undefined
+    return currentUrl ? currentUrl : ""; 
   };
 
   return (
@@ -113,7 +107,7 @@ const ShareModal = ({
 
         <div className="grid grid-cols-4 gap-2 my-2">
           {socialLinks.map((link, index) => {
-            const currentUrl = getCurrentUrl(); // Get the current URL
+            const currentUrl = getCurrentUrl(); 
             return (
               <div key={index} className="flex flex-col gap-1 items-center">
                 <Link href={`${link.href}${encodeURIComponent(currentUrl)}`}>
@@ -133,7 +127,7 @@ const ShareModal = ({
         <div className="w-full relative flex items-center justify-center">
           <input
             type="text"
-            value={getCurrentUrl()}  // Display the current URL
+            value={getCurrentUrl()} 
             className="w-full text-sm text-[#212121] tracking-wide outline-none p-3 rounded-md border-none bg-[#D9D9D9] focus:border-blue-500 relative"
             readOnly
           />

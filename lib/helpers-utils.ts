@@ -21,6 +21,8 @@ export function throttle(cb: (...args: any[]) => void, del: number) {
     "bg-teal-100",
   ];
 
+  
+
   export const formatPostDate = (dateString: string) => {
     const date = new Date(dateString);
 

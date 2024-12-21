@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import MyPosts from "@/components/MyPosts";
 import { fetchUserData } from "@/lib/actions/user";
 import { Iuser } from "@/lib/types";
-import ProfileShimmer from "@/components/ProfileShimmer";
+import ProfileShimmer from "@/components/Shimmers/ProfileShimmer";
 
 const ProfileContent = ({ id }: { id: string }) => {
   const { user } = useUser();

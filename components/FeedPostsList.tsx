@@ -17,6 +17,7 @@ import ShareModal from "./ShareModal";
 import {  FaLocationArrow } from "react-icons/fa";
 import LikeButton from "./LikeButton";
 import { Plus } from "lucide-react";
+import FeedSkeleton from "./Shimmers/FeedShimmer";
 
 const FeedPostsList = ({
   posts,
@@ -27,6 +28,14 @@ const FeedPostsList = ({
 }) => {
   const router = useRouter();
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (posts) {
+      setIsLoading(false);
+    }
+  }, [posts]);
+
   useEffect(() => {
     if (shareModalOpen) {
       document.body.style.overflow = "hidden";
@@ -43,7 +52,7 @@ const FeedPostsList = ({
     <div className="w-full  bg-red-40">
       <h2 className="text-2xl font-bold mt-5">Feeds</h2>
       <div className="w-full mt-4">
-        {posts.map((post, i: number) => {
+        {isLoading ? (<FeedSkeleton />) :(posts.map((post, i: number) => {
          return ( <div key={i}  className={`rounded-2xl h-auto p-4  ${lightColors[i % lightColors.length]} mb-4`}>
             <div
               className="flex w-fit cursor-pointer gap-4 "
@@ -148,7 +157,8 @@ const FeedPostsList = ({
             </div>
           </div>
         )}
-        )}
+        ))}
+      
       </div>
      <ShareModal shareModalOpen={shareModalOpen} setShareModalOpen={setShareModalOpen}/>
      <button
